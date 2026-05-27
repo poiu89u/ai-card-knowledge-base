@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="ai evaluation">
+  <rect width="960" height="540" fill="#fff9f5"/>
+  <rect x="164" y="112" width="632" height="316" rx="24" fill="#ffffff" stroke="#172033" stroke-width="10"/>
+  <path d="M246 342h92V224h-92v118Zm184 0h92V176h-92v166Zm184 0h92v-92h-92v92Z" fill="#1967d2"/>
+  <path d="m240 372 102-92 110 36 132-126 130 42" fill="none" stroke="#e4572e" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

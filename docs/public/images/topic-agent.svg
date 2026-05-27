@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="agent tools">
+  <rect width="960" height="540" fill="#f8fbf5"/>
+  <rect x="390" y="170" width="180" height="180" rx="28" fill="#172033"/>
+  <circle cx="450" cy="250" r="16" fill="#fff"/>
+  <circle cx="510" cy="250" r="16" fill="#fff"/>
+  <path d="M430 300h100" stroke="#fff" stroke-width="14" stroke-linecap="round"/>
+  <g fill="none" stroke="#1967d2" stroke-width="14" stroke-linecap="round">
+    <path d="M390 260H210"/>
+    <path d="M570 260h180"/>
+    <path d="M480 170V84"/>
+    <path d="M480 350v100"/>
+  </g>
+  <circle cx="190" cy="260" r="40" fill="#0f8b8d"/>
+  <circle cx="770" cy="260" r="40" fill="#e4572e"/>
+  <circle cx="480" cy="64" r="40" fill="#1967d2"/>
+  <circle cx="480" cy="470" r="40" fill="#607086"/>
+</svg>

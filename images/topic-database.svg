@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="database">
+  <rect width="960" height="540" fill="#f1fbff"/>
+  <ellipse cx="480" cy="150" rx="220" ry="70" fill="#1967d2"/>
+  <path d="M260 150v210c0 39 98 70 220 70s220-31 220-70V150" fill="#1967d2" opacity=".86"/>
+  <ellipse cx="480" cy="360" rx="220" ry="70" fill="#0f8b8d"/>
+  <g fill="#fff" opacity=".9">
+    <circle cx="390" cy="250" r="18"/>
+    <circle cx="480" cy="250" r="18"/>
+    <circle cx="570" cy="250" r="18"/>
+  </g>
+</svg>

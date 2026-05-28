@@ -4,3 +4,7 @@ docs/.vitepress/cache
 docs/.vitepress/dist
 .DS_Store
 *.log
+ai-card-knowledge-base-upload.zip
+github-root-upload.zip
+github-root-upload/
+github-pages-static-upload/

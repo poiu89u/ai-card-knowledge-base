@@ -139,6 +139,7 @@ body {
   flex-direction: column;
   justify-content: center;
   min-height: 170px;
+  padding: 18px;
 }
 
 .dark .kb-hero__panel {
@@ -151,6 +152,35 @@ body {
   font-size: 58px;
   font-weight: 900;
   line-height: 1;
+}
+
+.kb-mascot {
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.kb-mascot--hero {
+  height: 112px;
+  margin: -16px 0 -3px;
+  width: 132px;
+}
+
+.elephant-idle {
+  animation: elephant-idle 3.8s ease-in-out infinite;
+  transform-origin: 50% 88%;
+}
+
+@keyframes elephant-idle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-0.8deg);
+  }
+
+  50% {
+    transform: translateY(-6px) rotate(0.8deg);
+  }
 }
 
 .kb-hero__panel strong {
@@ -229,6 +259,12 @@ body {
   padding: 18px 20px;
 }
 
+.kb-mascot--notice {
+  flex: 0 0 auto;
+  height: 86px;
+  width: 86px;
+}
+
 .dark .kb-notice {
   background: rgba(18, 48, 58, 0.84);
 }
@@ -261,7 +297,9 @@ body {
   gap: 24px;
   grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
   margin-bottom: 22px;
+  overflow: hidden;
   padding: 20px;
+  position: relative;
 }
 
 .dark .kb-manual {
@@ -274,6 +312,19 @@ body {
   display: block;
   object-fit: cover;
   width: 100%;
+}
+
+.kb-manual__copy {
+  padding-right: 70px;
+}
+
+.kb-manual .kb-mascot--manual {
+  bottom: -14px;
+  height: 118px;
+  opacity: 0.96;
+  position: absolute;
+  right: -6px;
+  width: 118px;
 }
 
 .kb-manual h2 {
@@ -612,10 +663,24 @@ body {
 }
 
 .kb-empty {
+  align-items: center;
   color: var(--kb-muted);
+  display: flex;
+  flex-direction: column;
   grid-column: 1 / -1;
   margin: 28px 0;
   text-align: center;
+}
+
+.kb-empty img {
+  background: transparent;
+  height: 150px;
+  object-fit: contain;
+  width: 150px;
+}
+
+.kb-empty p {
+  margin: 4px 0 0;
 }
 
 @media (max-width: 960px) {
@@ -649,11 +714,35 @@ body {
     flex-direction: column;
   }
 
+  .kb-mascot--notice {
+    height: 72px;
+    margin-bottom: -14px;
+    width: 72px;
+  }
+
+  .kb-manual__copy {
+    padding-right: 0;
+  }
+
+  .kb-manual .kb-mascot--manual {
+    bottom: -10px;
+    height: 88px;
+    opacity: 0.24;
+    right: -8px;
+    width: 88px;
+  }
+
   .kb-grid {
     grid-template-columns: 1fr;
   }
 
   .knowledge-card {
     min-height: 640px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .elephant-idle {
+    animation: none;
   }
 }

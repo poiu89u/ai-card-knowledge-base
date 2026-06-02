@@ -97,6 +97,11 @@ function isFlipped(id: string) {
         </div>
       </div>
       <div class="kb-hero__panel" aria-label="知识库概览">
+        <img
+          class="kb-mascot kb-mascot--hero elephant-idle"
+          :src="withBase('/images/elephant/welcome-wave.webp')"
+          alt="挥手欢迎的蓝色小象"
+        />
         <span>{{ cards.length }}</span>
         <strong>张官方来源卡片</strong>
         <small>点击卡片可翻面</small>
@@ -104,6 +109,11 @@ function isFlipped(id: string) {
     </section>
 
     <section class="kb-notice" aria-label="公告">
+      <img
+        class="kb-mascot kb-mascot--notice elephant-idle"
+        :src="withBase('/images/elephant/tip-note.webp')"
+        alt=""
+      />
       <div>
         <strong>公告</strong>
         <p>
@@ -125,6 +135,12 @@ function isFlipped(id: string) {
           <li><strong>随机学：</strong>点“随机换一组”，首页会重新排列知识点。</li>
         </ul>
       </div>
+      <img
+        class="kb-mascot kb-mascot--manual elephant-idle"
+        :src="withBase('/images/elephant/reading.webp')"
+        alt=""
+        loading="lazy"
+      />
     </section>
 
     <section class="kb-controls" aria-label="筛选知识卡片">
@@ -239,7 +255,10 @@ function isFlipped(id: string) {
         </div>
       </article>
 
-      <p v-if="visibleCards.length === 0" class="kb-empty">没有匹配卡片，换个关键词试试。</p>
+      <div v-if="visibleCards.length === 0" class="kb-empty">
+        <img :src="withBase('/images/elephant/empty-peek.webp')" alt="" loading="lazy" />
+        <p>没有匹配卡片，换个关键词试试。</p>
+      </div>
     </section>
   </main>
 </template>

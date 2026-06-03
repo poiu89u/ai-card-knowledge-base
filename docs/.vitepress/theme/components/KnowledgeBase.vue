@@ -10,6 +10,25 @@ const randomMode = ref(false)
 const randomSeed = ref(1)
 const flippedCards = ref(new Set<string>())
 
+const categoryDescriptions: Record<(typeof categories)[number], string> = {
+  全部: '所有知识点',
+  'AI 基础认知': '入门概念与基础名词',
+  主流大模型体系: '模型、API 与能力区别',
+  'AIGC 应用细分': '图像、视频与办公生成',
+  'AI 配套技术': '命令行、依赖与部署',
+  '前端 & 网页搭建': '页面、框架与卡片站',
+  '数据 & 存储': '数据库、检索与缓存',
+  'AI 行业 & 场景应用': '效率玩法与落地场景',
+  进阶常识: 'Agent、MCP 与安全边界'
+}
+
+const sourceDescriptions: Record<(typeof sourceLevels)[number], string> = {
+  全部: '不限来源状态',
+  官方已核: '以官方文档为准',
+  双源可追溯: '官方 + 正规解读',
+  待人工复核: '后续继续校验'
+}
+
 const filteredCards = computed(() => {
   const normalizedQuery = query.value.trim().toLowerCase()
 
@@ -87,14 +106,6 @@ function isFlipped(id: string) {
         <p>
           用统一卡片沉淀 AI、开发、数据库、前端与运维知识。每张卡都拆成官方要点、小白解释、使用场景和注意边界。
         </p>
-        <div class="kb-hero__actions" aria-label="首页快捷操作">
-          <button class="kb-action kb-action--primary" type="button" @click="shuffleCards">
-            ✨ 随机换一组
-          </button>
-          <button class="kb-action kb-action--soft" type="button" @click="resetFilters">
-            🧽 清空筛选
-          </button>
-        </div>
       </div>
       <div class="kb-hero__panel" aria-label="知识库概览">
         <img
@@ -102,45 +113,27 @@ function isFlipped(id: string) {
           :src="withBase('/images/elephant/welcome-wave.webp')"
           alt="挥手欢迎的蓝色小象"
         />
-        <span>{{ cards.length }}</span>
-        <strong>张官方来源卡片</strong>
-        <small>点击卡片可翻面</small>
+        <strong>AI 学习助手</strong>
+        <small>先搜索，或选择一个知识大类开始</small>
       </div>
     </section>
 
-    <section class="kb-notice" aria-label="公告">
+    <section class="kb-notice kb-notice--manual" aria-label="使用手册">
       <img
         class="kb-mascot kb-mascot--notice elephant-idle"
         :src="withBase('/images/elephant/tip-note.webp')"
         alt=""
       />
       <div>
-        <strong>公告</strong>
-        <p>
-          现在可交互的地方已经全部做成彩色按钮：搜索会实时过滤，分类会收窄范围，随机按钮会洗牌，卡片上的“翻到背面”会显示官方来源和避坑说明。
-        </p>
-      </div>
-      <a :href="withBase('/guide/source-checklist')">查看入库校验规则</a>
-    </section>
-
-    <section class="kb-manual" aria-label="使用手册">
-      <img :src="withBase('/images/manual-image2.png')" alt="AI 知识卡片库使用手册插图" loading="lazy" />
-      <div class="kb-manual__copy">
-        <p class="kb-kicker">Quick Manual</p>
-        <h2>使用手册</h2>
-        <ul>
-          <li><strong>搜一搜：</strong>输入关键词，卡片会实时变少。</li>
-          <li><strong>点分类：</strong>只看 AI 图像、Agent、数据库等一个方向。</li>
-          <li><strong>看背面：</strong>点“翻到背面”，查看官方要点、误区和来源。</li>
-          <li><strong>随机学：</strong>点“随机换一组”，首页会重新排列知识点。</li>
+        <strong>使用手册</strong>
+        <ul class="kb-notice__list">
+          <li><b>搜索：</b>输入 MCP、Docker、Token 等关键词，卡片会实时过滤。</li>
+          <li><b>知识大类：</b>先选学习方向，再看对应卡片，避免乱点。</li>
+          <li><b>来源状态：</b>按官方已核、双源可追溯、待人工复核筛选。</li>
+          <li><b>随机 / 清空：</b>在下方筛选区使用，方便换一组或恢复全部。</li>
         </ul>
       </div>
-      <img
-        class="kb-mascot kb-mascot--manual elephant-idle"
-        :src="withBase('/images/elephant/reading.webp')"
-        alt=""
-        loading="lazy"
-      />
+      <a :href="withBase('/guide/source-checklist')">入库校验规则</a>
     </section>
 
     <section class="kb-controls" aria-label="筛选知识卡片">
@@ -151,35 +144,49 @@ function isFlipped(id: string) {
 
       <div class="kb-toolbar" aria-label="快捷按钮">
         <button class="kb-action kb-action--primary" type="button" @click="shuffleCards">
-          🎲 随机知识点
+          ✨ 随机换一组
         </button>
         <button class="kb-action kb-action--soft" type="button" @click="resetFilters">
-          ↺ 恢复全部
+          🧽 清空筛选
         </button>
       </div>
 
-      <div class="kb-filter" aria-label="分类">
-        <button
-          v-for="category in categories"
-          :key="category"
-          :class="{ 'is-active': activeCategory === category }"
-          type="button"
-          @click="activeCategory = category"
-        >
-          {{ category }}
-        </button>
+      <div class="kb-filter-group" aria-label="知识大类">
+        <div class="kb-filter-heading">
+          <strong>知识大类</strong>
+          <span>按学习方向筛选，不同大类的边界更清楚。</span>
+        </div>
+        <div class="kb-filter kb-filter--category">
+          <button
+            v-for="category in categories"
+            :key="category"
+            :class="{ 'is-active': activeCategory === category }"
+            type="button"
+            @click="activeCategory = category"
+          >
+            <span>{{ category }}</span>
+            <small>{{ categoryDescriptions[category] }}</small>
+          </button>
+        </div>
       </div>
 
-      <div class="kb-filter kb-filter--quality" aria-label="来源状态">
-        <button
-          v-for="quality in sourceLevels"
-          :key="quality"
-          :class="{ 'is-active': activeQuality === quality }"
-          type="button"
-          @click="activeQuality = quality"
-        >
-          {{ quality }}
-        </button>
+      <div class="kb-filter-group" aria-label="来源状态">
+        <div class="kb-filter-heading">
+          <strong>来源状态</strong>
+          <span>按可信度和复核进度筛选。</span>
+        </div>
+        <div class="kb-filter kb-filter--quality">
+          <button
+            v-for="quality in sourceLevels"
+            :key="quality"
+            :class="{ 'is-active': activeQuality === quality }"
+            type="button"
+            @click="activeQuality = quality"
+          >
+            <span>{{ quality }}</span>
+            <small>{{ sourceDescriptions[quality] }}</small>
+          </button>
+        </div>
       </div>
     </section>
 

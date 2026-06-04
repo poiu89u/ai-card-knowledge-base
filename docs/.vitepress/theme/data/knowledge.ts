@@ -48,6 +48,178 @@ export const sourceLevels: Array<'全部' | SourceLevel> = [
   '待人工复核'
 ]
 
+
+export type LearningLevel = '初学必看' | '进阶必看'
+
+export type LearningMeta = {
+  level: LearningLevel
+  learningGoal: string
+  prerequisites: string[]
+  related: string[]
+  next: string[]
+}
+
+export const learningLevels: Array<'全部' | LearningLevel> = ['全部', '初学必看', '进阶必看']
+
+const defaultLevelByCategory: Record<KnowledgeCategory, LearningLevel> = {
+  'AI 基础认知': '初学必看',
+  '主流大模型体系': '初学必看',
+  'AIGC 应用细分': '初学必看',
+  'AI 配套技术': '初学必看',
+  '前端 & 网页搭建': '初学必看',
+  '数据 & 存储': '进阶必看',
+  'AI 行业 & 场景应用': '进阶必看',
+  '进阶常识': '进阶必看'
+}
+
+export const learningMeta: Record<string, LearningMeta> = {
+  'ai-basic-map': {
+    level: '初学必看',
+    learningGoal: '区分人工智能、机器学习、深度学习和大模型的包含关系。',
+    prerequisites: [],
+    related: ['生成式 AI / AIGC', 'Token', 'ChatGPT'],
+    next: ['大模型', '提示词']
+  },
+  'generative-ai-aigc': {
+    level: '初学必看',
+    learningGoal: '理解生成式 AI 能生成文本、图片、视频和代码，但仍需要复核。',
+    prerequisites: ['AI 基础关系图'],
+    related: ['AI 图像生成', 'Sora / 视频生成', 'ChatGPT'],
+    next: ['提示词', 'AI 幻觉']
+  },
+  chatgpt: {
+    level: '初学必看',
+    learningGoal: '知道 ChatGPT 是面向普通用户的 AI 对话产品，适合问答、写作、总结和学习。',
+    prerequisites: ['生成式 AI / AIGC'],
+    related: ['提示词', 'Token', '上下文窗口'],
+    next: ['Codex', 'Agent 智能体']
+  },
+  html: {
+    level: '初学必看',
+    learningGoal: '知道 HTML 负责网页结构，CSS 负责样式，JavaScript 负责交互。',
+    prerequisites: [],
+    related: ['Markdown', 'VitePress', '前端框架地图'],
+    next: ['GitHub Pages', 'Vercel']
+  },
+  markdown: {
+    level: '初学必看',
+    learningGoal: '掌握用纯文本写标题、列表、链接、图片和代码块。',
+    prerequisites: [],
+    related: ['HTML', 'VitePress', 'AGENTS.md 与 CLAUDE.md'],
+    next: ['GitHub', '个人主页开发流程']
+  },
+  git: {
+    level: '初学必看',
+    learningGoal: '理解 Git 是本地版本控制工具，用来记录和回退改动。',
+    prerequisites: [],
+    related: ['Git 核心流程', 'GitHub'],
+    next: ['GitHub 协作流程']
+  },
+  github: {
+    level: '初学必看',
+    learningGoal: '理解 GitHub 是远端代码仓库和协作平台，不等同于 Git 本身。',
+    prerequisites: ['Git'],
+    related: ['Git 核心流程', 'GitHub Pages', 'GitHub 协作流程'],
+    next: ['Pull Request', 'GitHub Pages']
+  },
+  'git-core-flow': {
+    level: '初学必看',
+    learningGoal: '理解 init、commit、branch、HEAD、.gitignore 和工作区/暂存区/仓库的作用。',
+    prerequisites: ['Git'],
+    related: ['GitHub', 'Git 后悔药与同步', 'GitHub 协作流程'],
+    next: ['GitHub Pages', 'Pull Request']
+  },
+  'github-pages': {
+    level: '初学必看',
+    learningGoal: '知道 GitHub Pages 能把静态网页发布成公网链接。',
+    prerequisites: ['GitHub', 'HTML', 'Markdown'],
+    related: ['VitePress', 'GitHub Actions', 'Vercel'],
+    next: ['部署与 CI/CD']
+  },
+  vercel: {
+    level: '初学必看',
+    learningGoal: '知道 Vercel 是常见前端部署平台，适合静态站和前端框架项目。',
+    prerequisites: ['HTML', 'GitHub'],
+    related: ['GitHub Pages', 'VitePress', '前端框架地图'],
+    next: ['环境变量', 'CI/CD']
+  },
+  'codex-agent': {
+    level: '初学必看',
+    learningGoal: '知道 Codex 是能读写项目文件、运行命令并推进开发任务的 AI 编程代理。',
+    prerequisites: ['Git', 'Markdown'],
+    related: ['ChatGPT', 'Claude Code', 'Agent 智能体'],
+    next: ['Skills', 'AGENTS.md 与 CLAUDE.md']
+  },
+  'git-undo-sync': {
+    level: '进阶必看',
+    learningGoal: '区分 discard、reset、revert、fetch、pull、merge 的使用边界。',
+    prerequisites: ['Git 核心流程', 'GitHub'],
+    related: ['GitHub 协作流程', 'worktree', 'rebase'],
+    next: ['多人协作安全规则']
+  },
+  'github-collaboration': {
+    level: '进阶必看',
+    learningGoal: '理解 fork、branch、Pull Request、review、issues 和开源贡献流程。',
+    prerequisites: ['GitHub', 'Git 核心流程'],
+    related: ['Git 后悔药与同步', 'GitHub Pages', 'Codex'],
+    next: ['Agent 辅助开发']
+  },
+  agent: {
+    level: '进阶必看',
+    learningGoal: '理解 Agent 不是只聊天，而是能规划、调用工具并持续推进任务。',
+    prerequisites: ['ChatGPT', '函数调用'],
+    related: ['MCP', 'Skills', 'n8n'],
+    next: ['权限与安全边界']
+  },
+  rag: {
+    level: '进阶必看',
+    learningGoal: '理解知识库问答为什么要先检索资料再生成答案。',
+    prerequisites: ['Embedding', '上下文窗口'],
+    related: ['FastGPT', 'Dify', '来源校验'],
+    next: ['检索质量评估']
+  },
+  coze: {
+    level: '进阶必看',
+    learningGoal: '理解扣子 / Coze 属于低代码 AI Bot 与 Agent 搭建平台。',
+    prerequisites: ['ChatGPT', 'Agent 智能体'],
+    related: ['Dify', 'FastGPT', 'n8n'],
+    next: ['工作流编排', '知识库问答']
+  },
+  dify: {
+    level: '进阶必看',
+    learningGoal: '理解 Dify 可把模型、提示词、知识库和工作流组合成 AI 应用。',
+    prerequisites: ['提示词', 'RAG 检索增强生成'],
+    related: ['FastGPT', 'Coze / 扣子', 'n8n'],
+    next: ['企业知识库', '工作流自动化']
+  },
+  fastgpt: {
+    level: '进阶必看',
+    learningGoal: '理解 FastGPT 更偏知识库问答、RAG 和可视化 AI 应用编排。',
+    prerequisites: ['Embedding', 'RAG 检索增强生成'],
+    related: ['Dify', '向量数据库', '知识库框架'],
+    next: ['检索质量评估']
+  },
+  n8n: {
+    level: '进阶必看',
+    learningGoal: '理解 n8n 是工作流自动化工具，可连接应用、API 和 AI 节点。',
+    prerequisites: ['API', '函数调用', 'Agent 智能体'],
+    related: ['Dify', 'Coze / 扣子', 'Hook'],
+    next: ['自动化权限与审计']
+  }
+}
+
+export function getLearningMeta(card: KnowledgeCard): LearningMeta {
+  return (
+    learningMeta[card.id] ?? {
+      level: defaultLevelByCategory[card.category],
+      learningGoal: `理解「${card.title}」的用途、使用边界和常见误区。`,
+      prerequisites: [],
+      related: card.tags.slice(0, 3),
+      next: card.useCases.slice(0, 2)
+    }
+  )
+}
+
 export const cards: KnowledgeCard[] = [
   {
     id: 'responses-api',
@@ -876,5 +1048,275 @@ export const cards: KnowledgeCard[] = [
     sourceName: 'VitePress guide',
     sourceUrl: 'https://vitepress.dev/guide/what-is-vitepress',
     image: '/images/cards/personal-homepage-demo.webp'
+  },
+  {
+    id: 'ai-basic-map',
+    title: 'AI 基础关系图',
+    category: 'AI 基础认知',
+    summary: '人工智能是大范围，机器学习是方法，深度学习是其中一种，大模型是深度学习发展出的重要形态。',
+    plain: '先把层级理清：AI 像总学科，机器学习像让机器从数据里学，深度学习像用神经网络学，大模型像规模更大的深度学习模型。',
+    officialPoint: 'Stanford 与主流机器学习课程通常把机器学习视为 AI 的重要分支，深度学习是机器学习中的神经网络方法。',
+    beginnerTakeaway: '不要把 AI、机器学习、深度学习、大模型混成一个词。',
+    caution: '通俗解释可以简化层级，但不要说“大模型等于全部 AI”。',
+    useCases: ['入门学习', '术语区分', '课程路线'],
+    tags: ['AI', 'ML', 'DL'],
+    version: 'AI 通识基础',
+    updated: '2026-06',
+    sourceLevel: '双源可追溯',
+    sourceName: 'Stanford CS229',
+    sourceUrl: 'https://cs229.stanford.edu/',
+    image: '/images/cards/knowledge-framework.webp'
+  },
+  {
+    id: 'generative-ai-aigc',
+    title: '生成式 AI / AIGC',
+    category: 'AI 基础认知',
+    summary: '生成式 AI 指能生成文本、图片、音频、视频、代码等新内容的 AI。',
+    plain: '它不是只做分类判断，而是能产出东西：写文案、画图、生成代码或总结文章。',
+    officialPoint: 'OpenAI、Google、Microsoft 等官方材料都把生成式 AI 作为生成内容的模型能力来介绍。',
+    beginnerTakeaway: '生成式 AI 的关键词是“生成内容”，AIGC 更偏“AI 生成内容”的应用说法。',
+    caution: '能生成不代表一定真实，事实、版权和隐私仍要检查。',
+    useCases: ['写作', '配图', '视频草稿', '代码辅助'],
+    tags: ['生成式 AI', 'AIGC', '内容生成'],
+    version: 'AI 通识基础',
+    updated: '2026-06',
+    sourceLevel: '双源可追溯',
+    sourceName: 'OpenAI ChatGPT',
+    sourceUrl: 'https://openai.com/chatgpt/',
+    image: '/images/cards/image-generation.webp'
+  },
+  {
+    id: 'chatgpt',
+    title: 'ChatGPT',
+    category: '主流大模型体系',
+    summary: 'OpenAI 面向个人和团队的 AI 对话产品，可用于问答、写作、学习、分析和多模态任务。',
+    plain: '你可以把 ChatGPT 当成会对话的 AI 工作台：问问题、改文案、总结资料、分析图片、辅助学习。',
+    officialPoint: 'ChatGPT 官方页面和帮助中心是确认功能、套餐、可用模型与隐私设置的权威入口。',
+    beginnerTakeaway: 'ChatGPT 是产品入口，不等于某一个固定模型。',
+    caution: '回答可能出错；重要内容要看来源、日期和证据。',
+    useCases: ['学习问答', '写作润色', '资料总结', '图片理解'],
+    tags: ['OpenAI', 'ChatGPT', '对话产品'],
+    version: 'OpenAI 官方产品',
+    updated: '2026-06',
+    sourceLevel: '官方已核',
+    sourceName: 'OpenAI ChatGPT',
+    sourceUrl: 'https://openai.com/chatgpt/',
+    image: '/images/cards/responses-api.webp'
+  },
+  {
+    id: 'html',
+    title: 'HTML',
+    category: '前端 & 网页搭建',
+    summary: 'HTML 是网页内容结构语言，用标签描述标题、段落、链接、图片、表单等页面元素。',
+    plain: 'HTML 像网页骨架：告诉浏览器哪里是标题、哪里是图片、哪里是按钮。',
+    officialPoint: 'MDN 将 HTML 介绍为用于构建网页结构和内容的标记语言。',
+    beginnerTakeaway: 'HTML 管结构，CSS 管样式，JavaScript 管交互。',
+    caution: 'HTML 不是编程语言，不负责复杂逻辑。',
+    useCases: ['网页结构', '静态页面', '知识卡片内容'],
+    tags: ['HTML', '网页', '结构'],
+    version: 'MDN Web Docs',
+    updated: '2026-06',
+    sourceLevel: '官方已核',
+    sourceName: 'MDN HTML',
+    sourceUrl: 'https://developer.mozilla.org/en-US/docs/Web/HTML',
+    image: '/images/cards/web-performance.webp'
+  },
+  {
+    id: 'markdown',
+    title: 'Markdown',
+    category: '前端 & 网页搭建',
+    summary: 'Markdown 是轻量标记语法，用纯文本写标题、列表、链接、图片和代码块。',
+    plain: '它像好读的文本格式：不用写复杂 HTML，也能写出结构清楚的文档。',
+    officialPoint: 'CommonMark 和 Markdown Guide 维护了 Markdown 基础语法与兼容说明。',
+    beginnerTakeaway: '写知识库、README、笔记和文档时优先用 Markdown。',
+    caution: '不同平台支持的扩展语法不完全一样。',
+    useCases: ['README', '知识卡片', '项目说明', '笔记'],
+    tags: ['Markdown', 'README', '文档'],
+    version: 'Markdown 基础语法',
+    updated: '2026-06',
+    sourceLevel: '双源可追溯',
+    sourceName: 'CommonMark',
+    sourceUrl: 'https://commonmark.org/help/',
+    image: '/images/cards/knowledge-framework.webp'
+  },
+  {
+    id: 'github',
+    title: 'GitHub',
+    category: 'AI 配套技术',
+    summary: 'GitHub 是代码托管与协作平台，用远端仓库保存、分享和协作管理项目。',
+    plain: 'Git 负责记录本地历史，GitHub 负责把仓库放到网上，方便备份、分享和多人协作。',
+    officialPoint: 'GitHub 官方文档围绕 repositories、commits、branches、issues、pull requests 等协作功能组织说明。',
+    beginnerTakeaway: 'Git 是工具，GitHub 是平台。',
+    caution: '公开仓库会被别人看到，不要上传密码、密钥和个人隐私文件。',
+    useCases: ['代码备份', '开源项目', '多人协作', '部署触发'],
+    tags: ['Repository', 'Remote', 'Collaboration'],
+    version: 'GitHub Docs',
+    updated: '2026-06',
+    sourceLevel: '官方已核',
+    sourceName: 'GitHub Docs',
+    sourceUrl: 'https://docs.github.com/en/repositories',
+    image: '/images/cards/github-actions.webp'
+  },
+  {
+    id: 'git-core-flow',
+    title: 'Git 核心流程',
+    category: 'AI 配套技术',
+    summary: 'Git 通过 init、commit、branch、HEAD、.gitignore 等概念记录项目变化。',
+    plain: '普通文件夹 init 后变成仓库；commit 是存档点；branch 是不同开发线；HEAD 表示你现在站在哪个提交上；.gitignore 表示哪些文件不纳入管理。',
+    officialPoint: 'Git 官方文档把 init、commit、branch、HEAD 等作为版本控制的基础概念和命令。',
+    beginnerTakeaway: '先理解“工作区 → 暂存区 → 本地仓库 → 远端仓库”的流向。',
+    caution: '删除 .git 会取消版本管理；操作前要确认是否需要保留历史。',
+    useCases: ['初始化项目', '保存历史', '创建分支', '忽略文件'],
+    tags: ['init', 'commit', 'branch', 'HEAD'],
+    version: 'Git 官方文档',
+    updated: '2026-06',
+    sourceLevel: '官方已核',
+    sourceName: 'Git documentation',
+    sourceUrl: 'https://git-scm.com/docs',
+    image: '/images/cards/git.webp'
+  },
+  {
+    id: 'git-undo-sync',
+    title: 'Git 后悔药与同步',
+    category: 'AI 配套技术',
+    summary: 'discard、reset、revert、fetch、pull、merge 分别处理放弃修改、回退历史和同步远端。',
+    plain: '没提交的改动用 discard；自己分支可谨慎 reset；多人协作优先 revert；同步远端常用 pull，也可 fetch 后再 merge。',
+    officialPoint: 'Git 官方文档分别提供 reset、revert、fetch、pull、merge 等命令说明。',
+    beginnerTakeaway: '多人协作时优先用 revert，少用会改写历史的 reset/rebase。',
+    caution: 'reset、rebase 和强推可能影响别人，协作分支不要随便用。',
+    useCases: ['撤销错误', '同步远端', '解决冲突', '安全回退'],
+    tags: ['reset', 'revert', 'pull', 'merge'],
+    version: 'Git 官方文档',
+    updated: '2026-06',
+    sourceLevel: '官方已核',
+    sourceName: 'Git documentation',
+    sourceUrl: 'https://git-scm.com/docs',
+    image: '/images/cards/git.webp'
+  },
+  {
+    id: 'github-collaboration',
+    title: 'GitHub 协作流程',
+    category: 'AI 配套技术',
+    summary: 'Fork、branch、Pull Request、review、issues、releases、star 组成 GitHub 协作基础。',
+    plain: '没有权限就先 fork 到自己账号，改完开 PR；有协作权限就建分支改，提交 PR 让管理员审核合并。',
+    officialPoint: 'GitHub 官方文档将 pull requests 用于提出、讨论和合并代码改动，issues 用于问题跟踪。',
+    beginnerTakeaway: '开源贡献的常规路线是 fork → branch → commit → push → Pull Request。',
+    caution: '提 PR 前先同步上游最新代码，避免大量冲突。',
+    useCases: ['开源贡献', '代码审核', '问题讨论', '版本发布'],
+    tags: ['Fork', 'Pull Request', 'Issues', 'Review'],
+    version: 'GitHub Docs',
+    updated: '2026-06',
+    sourceLevel: '官方已核',
+    sourceName: 'GitHub Pull Requests',
+    sourceUrl: 'https://docs.github.com/en/pull-requests',
+    image: '/images/cards/github-actions.webp'
+  },
+  {
+    id: 'github-pages',
+    title: 'GitHub Pages',
+    category: '前端 & 网页搭建',
+    summary: 'GitHub Pages 可把仓库中的静态文件发布成公网网页。',
+    plain: '它适合个人主页、文档站、知识库这种静态网站。代码推到 GitHub 后，Pages 会把网页放到一个公开链接上。',
+    officialPoint: 'GitHub Pages 官方文档说明可从分支或 GitHub Actions 发布静态站点。',
+    beginnerTakeaway: '如果手机看到 README，通常是 Pages 发布源选错或没有发布构建后的 dist。',
+    caution: '项目页通常需要正确配置 base 路径，例如 /仓库名/。',
+    useCases: ['个人主页', 'VitePress 文档', '静态知识库', '公网预览'],
+    tags: ['Pages', 'Static Site', 'Deploy'],
+    version: 'GitHub Pages Docs',
+    updated: '2026-06',
+    sourceLevel: '官方已核',
+    sourceName: 'GitHub Pages docs',
+    sourceUrl: 'https://docs.github.com/en/pages',
+    image: '/images/cards/github-actions.webp'
+  },
+  {
+    id: 'vercel',
+    title: 'Vercel',
+    category: '前端 & 网页搭建',
+    summary: 'Vercel 是前端部署平台，常用于静态站、Next.js 和其他现代前端项目。',
+    plain: '你把项目连接到 GitHub，Vercel 可以自动安装依赖、构建网站，并给你一个公网链接。',
+    officialPoint: 'Vercel 官方文档覆盖项目导入、构建命令、输出目录、环境变量和部署流程。',
+    beginnerTakeaway: 'GitHub Pages 简单免费，Vercel 更适合前端项目自动部署和域名管理。',
+    caution: '部署失败时先查 build command、output directory、Node 版本和环境变量。',
+    useCases: ['前端部署', '自动预览', '绑定域名', '静态站托管'],
+    tags: ['Vercel', 'Deploy', 'Frontend'],
+    version: 'Vercel Docs',
+    updated: '2026-06',
+    sourceLevel: '官方已核',
+    sourceName: 'Vercel Docs',
+    sourceUrl: 'https://vercel.com/docs',
+    image: '/images/cards/web-performance.webp'
+  },
+  {
+    id: 'coze',
+    title: '扣子 / Coze',
+    category: 'AI 行业 & 场景应用',
+    summary: '扣子 / Coze 是用于搭建 AI Bot、Agent、知识库和工作流的低代码平台。',
+    plain: '它适合不想从零写代码的人：把模型、知识库、插件和流程拼起来，做一个能对话和办事的机器人。',
+    officialPoint: 'Coze 官方文档提供 Bot、插件、工作流和知识库等能力说明。',
+    beginnerTakeaway: 'Coze 更偏“快速搭 Bot 和 Agent 应用”。',
+    caution: '平台能力、模型接入和发布渠道会更新，具体以官方控制台为准。',
+    useCases: ['客服 Bot', '个人助手', '知识库问答', '工作流'],
+    tags: ['Coze', '扣子', 'Bot', '低代码'],
+    version: 'Coze Docs',
+    updated: '2026-06',
+    sourceLevel: '官方已核',
+    sourceName: 'Coze Docs',
+    sourceUrl: 'https://www.coze.com/docs',
+    image: '/images/cards/agent.webp'
+  },
+  {
+    id: 'dify',
+    title: 'Dify',
+    category: 'AI 行业 & 场景应用',
+    summary: 'Dify 是开源 LLM 应用开发平台，可组合模型、提示词、知识库、Agent 和工作流。',
+    plain: '它像 AI 应用搭建台：你可以配置模型、接知识库、写提示词、设计流程，再发布成应用。',
+    officialPoint: 'Dify 官方文档和开源仓库介绍其用于构建生成式 AI 应用、工作流和知识库问答。',
+    beginnerTakeaway: 'Dify 适合把“提示词 + 知识库 + 流程”变成可用应用。',
+    caution: '自部署要考虑模型密钥、数据库、向量库、权限和运维成本。',
+    useCases: ['AI 应用', '知识库问答', '工作流编排', '企业助手'],
+    tags: ['Dify', 'LLM App', 'Workflow', 'RAG'],
+    version: 'Dify Docs',
+    updated: '2026-06',
+    sourceLevel: '官方已核',
+    sourceName: 'Dify Docs',
+    sourceUrl: 'https://docs.dify.ai/en',
+    image: '/images/cards/rag.webp'
+  },
+  {
+    id: 'fastgpt',
+    title: 'FastGPT',
+    category: 'AI 行业 & 场景应用',
+    summary: 'FastGPT 是面向知识库问答和 AI 工作流的开源平台，常用于 RAG 应用。',
+    plain: '你可以把资料导进去，让系统检索相关内容，再让模型回答；也可以编排简单流程。',
+    officialPoint: 'FastGPT 官方文档介绍了知识库、应用编排、工作流和模型接入等能力。',
+    beginnerTakeaway: 'FastGPT 的重点是知识库问答和 RAG 应用。',
+    caution: '知识库效果取决于文档切分、检索质量和来源复核。',
+    useCases: ['企业知识库', '文档问答', 'RAG', '流程编排'],
+    tags: ['FastGPT', 'RAG', '知识库'],
+    version: 'FastGPT Docs',
+    updated: '2026-06',
+    sourceLevel: '官方已核',
+    sourceName: 'FastGPT Docs',
+    sourceUrl: 'https://doc.fastgpt.io/',
+    image: '/images/cards/rag.webp'
+  },
+  {
+    id: 'n8n',
+    title: 'n8n',
+    category: 'AI 行业 & 场景应用',
+    summary: 'n8n 是工作流自动化平台，可连接应用、API、数据库和 AI 节点。',
+    plain: '它像自动化流水线：某个事件触发后，按步骤调用不同工具，比如读表格、发消息、调用 AI、写数据库。',
+    officialPoint: 'n8n 官方文档提供 workflow、nodes、credentials、AI 相关节点和自动化执行说明。',
+    beginnerTakeaway: 'n8n 更偏“把很多工具串起来自动执行”。',
+    caution: '自动化会真实改数据或发消息，必须管好权限、凭证和日志。',
+    useCases: ['自动日报', '消息通知', 'API 串联', 'AI 自动化'],
+    tags: ['n8n', 'Workflow', 'Automation', 'AI'],
+    version: 'n8n Docs',
+    updated: '2026-06',
+    sourceLevel: '官方已核',
+    sourceName: 'n8n Docs',
+    sourceUrl: 'https://docs.n8n.io/',
+    image: '/images/cards/api-plugin-function-command.webp'
   }
 ]

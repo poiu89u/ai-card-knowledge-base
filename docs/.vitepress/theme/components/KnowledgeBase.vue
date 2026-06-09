@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { withBase } from 'vitepress'
-import { cards, categories, getLearningMeta, learningLevels, sourceLevels } from '../data/knowledge'
+import { cards, categories, getLearningMeta, getQuiz, learningLevels, sourceLevels } from '../data/knowledge'
 
 const query = ref('')
 const activeLearningLevel = ref<(typeof learningLevels)[number]>('初学必看')
@@ -11,7 +11,13 @@ const randomMode = ref(false)
 const randomSeed = ref(1)
 const flippedCards = ref(new Set<string>())
 const viewedCardIds = ref(new Set<string>())
+const reviewCardIds = ref(new Set<string>())
+const quizOpenIds = ref(new Set<string>())
+const quizSelections = ref<Record<string, number>>({})
+const quizResults = ref<Record<string, 'correct' | 'incorrect'>>({})
+const reviewOnly = ref(false)
 const storageKey = 'ai-card-knowledge-viewed-v1'
+const reviewStorageKey = 'ai-card-knowledge-review-v1'
 
 const categoryDescriptions: Record<(typeof categories)[number], string> = {
   全部: '所有知识点',
@@ -60,6 +66,7 @@ const filteredCards = computed(() => {
     const matchesLearningLevel = activeLearningLevel.value === '全部' || learningMeta.level === activeLearningLevel.value
     const matchesCategory = activeCategory.value === '全部' || card.category === activeCategory.value
     const matchesQuality = activeQuality.value === '全部' || card.sourceLevel === activeQuality.value
+    const matchesReview = !reviewOnly.value || reviewCardIds.value.has(card.id)
     const haystack = [
       card.title,
       card.category,
@@ -80,7 +87,7 @@ const filteredCards = computed(() => {
       .join(' ')
       .toLowerCase()
 
-    return matchesLearningLevel && matchesCategory && matchesQuality && (!normalizedQuery || haystack.includes(normalizedQuery))
+    return matchesLearningLevel && matchesCategory && matchesQuality && matchesReview && (!normalizedQuery || haystack.includes(normalizedQuery))
   })
 })
 
@@ -110,6 +117,7 @@ function resetFilters() {
   activeCategory.value = '全部'
   activeQuality.value = '全部'
   randomMode.value = false
+  reviewOnly.value = false
   flippedCards.value = new Set()
 }
 
@@ -131,14 +139,49 @@ function isViewed(id: string) {
   return viewedCardIds.value.has(id)
 }
 
-function markViewed(id: string) {
-  const next = new Set(viewedCardIds.value)
-  next.add(id)
-  viewedCardIds.value = next
+function isQuizOpen(id: string) {
+  return quizOpenIds.value.has(id)
+}
+
+function toggleQuiz(id: string) {
+  const next = new Set(quizOpenIds.value)
+  if (next.has(id)) {
+    next.delete(id)
+  } else {
+    next.add(id)
+  }
+  quizOpenIds.value = next
+}
+
+function answerQuiz(card: (typeof cards)[number], selectedIndex: number) {
+  const quiz = getQuiz(card)
+  quizSelections.value = { ...quizSelections.value, [card.id]: selectedIndex }
+
+  if (selectedIndex === quiz.correctIndex) {
+    quizResults.value = { ...quizResults.value, [card.id]: 'correct' }
+    const viewed = new Set(viewedCardIds.value)
+    viewed.add(card.id)
+    viewedCardIds.value = viewed
+
+    const review = new Set(reviewCardIds.value)
+    review.delete(card.id)
+    reviewCardIds.value = review
+    return
+  }
+
+  quizResults.value = { ...quizResults.value, [card.id]: 'incorrect' }
+  const review = new Set(reviewCardIds.value)
+  review.add(card.id)
+  reviewCardIds.value = review
 }
 
 function clearLearningProgress() {
   viewedCardIds.value = new Set()
+  reviewCardIds.value = new Set()
+  quizSelections.value = {}
+  quizResults.value = {}
+  quizOpenIds.value = new Set()
+  reviewOnly.value = false
   activeLearningLevel.value = '初学必看'
 }
 
@@ -156,6 +199,17 @@ function hasLearningLinks(card: (typeof cards)[number]) {
   return meta.prerequisites.length > 0 || meta.related.length > 0 || meta.next.length > 0
 }
 
+function optionClass(cardId: string, optionIndex: number, correctIndex: number) {
+  const selectedIndex = quizSelections.value[cardId]
+  const result = quizResults.value[cardId]
+
+  return {
+    'is-selected': selectedIndex === optionIndex,
+    'is-correct': result === 'correct' && optionIndex === correctIndex,
+    'is-incorrect': result === 'incorrect' && selectedIndex === optionIndex
+  }
+}
+
 onMounted(() => {
   try {
     const stored = window.localStorage.getItem(storageKey)
@@ -165,11 +219,27 @@ onMounted(() => {
   } catch {
     viewedCardIds.value = new Set()
   }
+
+  try {
+    const storedReview = window.localStorage.getItem(reviewStorageKey)
+    if (storedReview) {
+      reviewCardIds.value = new Set(JSON.parse(storedReview))
+    }
+  } catch {
+    reviewCardIds.value = new Set()
+  }
 })
 
 watch(viewedCardIds, (next) => {
   try {
     window.localStorage.setItem(storageKey, JSON.stringify([...next]))
+  } catch {
+  }
+})
+
+watch(reviewCardIds, (next) => {
+  try {
+    window.localStorage.setItem(reviewStorageKey, JSON.stringify([...next]))
   } catch {
   }
 })
@@ -211,7 +281,7 @@ watch(advancedUnlocked, (unlocked) => {
       <div>
         <strong>使用手册</strong>
         <ul class="kb-notice__list">
-          <li><b>先学初学：</b>每张初学卡点“已看懂”，全部完成后才展示进阶。</li>
+          <li><b>先学初学：</b>每张初学卡答对一道理解题，全部通过后才展示进阶。</li>
           <li><b>看关联：</b>卡片背面会显示前置知识、相关知识和下一步。</li>
           <li><b>再筛选：</b>用知识大类、来源状态和搜索缩小范围。</li>
           <li><b>再进阶：</b>解锁后学习 Agent、RAG、自动化、部署与协作。</li>
@@ -226,7 +296,7 @@ watch(advancedUnlocked, (unlocked) => {
           <p class="kb-kicker">Learning Path</p>
           <h2>先完成初学必看，再进入进阶必看</h2>
           <p>
-            初学进度 {{ beginnerViewedCount }} / {{ beginnerCards.length }}。进阶知识会在初学卡全部标记“已看懂”后展示。
+            初学进度 {{ beginnerViewedCount }} / {{ beginnerCards.length }}。答对才计入掌握，答错会进入待复习。
           </p>
         </div>
         <div class="kb-progress-card">
@@ -235,6 +305,10 @@ watch(advancedUnlocked, (unlocked) => {
             <i :style="{ width: `${beginnerProgressPercent}%` }"></i>
           </div>
           <strong>{{ advancedUnlocked ? '进阶已解锁' : '进阶暂未解锁' }}</strong>
+          <span class="kb-review-count">待复习 {{ reviewCardIds.size }} 张</span>
+          <button v-if="reviewCardIds.size" type="button" @click="reviewOnly = !reviewOnly">
+            {{ reviewOnly ? '退出错题复习' : '只看待复习' }}
+          </button>
           <button type="button" @click="clearLearningProgress">重置学习进度</button>
         </div>
       </div>
@@ -347,9 +421,31 @@ watch(advancedUnlocked, (unlocked) => {
               <button class="flip-button" type="button" @click="toggleFlip(card.id)">
                 翻到背面
               </button>
-              <button class="read-button" :class="{ 'is-read': isViewed(card.id) }" type="button" @click="markViewed(card.id)">
-                {{ isViewed(card.id) ? '已看懂' : '标记已看懂' }}
+              <button class="read-button" :class="{ 'is-read': isViewed(card.id) }" type="button" @click="toggleQuiz(card.id)">
+                {{ isViewed(card.id) ? '已掌握 · 再测一次' : '测一下是否学会' }}
               </button>
+              <div v-if="isQuizOpen(card.id)" class="knowledge-quiz" aria-live="polite">
+                <strong>{{ getQuiz(card).question }}</strong>
+                <div class="knowledge-quiz__options">
+                  <button
+                    v-for="(option, optionIndex) in getQuiz(card).options"
+                    :key="`${card.id}-quiz-${optionIndex}`"
+                    :class="optionClass(card.id, optionIndex, getQuiz(card).correctIndex)"
+                    :disabled="quizResults[card.id] === 'correct'"
+                    type="button"
+                    @click="answerQuiz(card, optionIndex)"
+                  >
+                    <span>{{ String.fromCharCode(65 + optionIndex) }}</span>
+                    {{ option }}
+                  </button>
+                </div>
+                <p v-if="quizResults[card.id] === 'correct'" class="knowledge-quiz__feedback is-correct">
+                  答对了。{{ getQuiz(card).explanation }}
+                </p>
+                <p v-else-if="quizResults[card.id] === 'incorrect'" class="knowledge-quiz__feedback is-incorrect">
+                  还没完全掌握。{{ getQuiz(card).explanation }} 可以重新选择。
+                </p>
+              </div>
             </div>
           </div>
 

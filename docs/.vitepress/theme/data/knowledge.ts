@@ -59,6 +59,13 @@ export type LearningMeta = {
   next: string[]
 }
 
+export type KnowledgeQuiz = {
+  question: string
+  options: string[]
+  correctIndex: number
+  explanation: string
+}
+
 export const learningLevels: Array<'全部' | LearningLevel> = ['全部', '初学必看', '进阶必看']
 
 const defaultLevelByCategory: Record<KnowledgeCategory, LearningLevel> = {
@@ -218,6 +225,137 @@ export function getLearningMeta(card: KnowledgeCard): LearningMeta {
       next: card.useCases.slice(0, 2)
     }
   )
+}
+
+const customQuizzes: Record<string, KnowledgeQuiz> = {
+  token: {
+    question: '下面关于 Token 的说法，哪一项正确？',
+    options: [
+      'Token 一定等于一个中文字或一个英文单词',
+      'Token 是模型处理文本时使用的基本片段，切分方式会因语言和内容而不同',
+      'Token 只影响价格，不影响上下文长度'
+    ],
+    correctIndex: 1,
+    explanation: 'Token 可能是一个字、词的一部分或符号，同时会影响上下文占用和使用量。'
+  },
+  chatgpt: {
+    question: 'ChatGPT 和 GPT 模型是什么关系？',
+    options: [
+      'ChatGPT 是产品入口，背后可以使用不同模型',
+      'ChatGPT 永远只代表一个固定模型',
+      'ChatGPT 是一种编程语言'
+    ],
+    correctIndex: 0,
+    explanation: 'ChatGPT 是面向用户的产品，实际可用模型和能力会随版本、套餐与平台更新。'
+  },
+  html: {
+    question: '网页中的 HTML 主要负责什么？',
+    options: ['页面结构和内容', '所有视觉样式', '服务器数据库备份'],
+    correctIndex: 0,
+    explanation: 'HTML 管结构，CSS 管样式，JavaScript 通常负责交互。'
+  },
+  markdown: {
+    question: 'Markdown 最适合用于下面哪个场景？',
+    options: ['编写 README、笔记和结构化文档', '替代数据库存储业务数据', '直接控制电脑硬件'],
+    correctIndex: 0,
+    explanation: 'Markdown 是轻量标记语法，适合文档、知识库和项目说明。'
+  },
+  git: {
+    question: 'Git 的核心用途是什么？',
+    options: ['托管视频网站', '记录项目改动并管理版本历史', '生成 AI 图片'],
+    correctIndex: 1,
+    explanation: 'Git 是版本控制工具；GitHub 才是常见的远端仓库托管与协作平台。'
+  },
+  github: {
+    question: 'Git 和 GitHub 的主要区别是什么？',
+    options: [
+      'Git 是版本控制工具，GitHub 是仓库托管与协作平台',
+      'Git 和 GitHub 完全相同',
+      'Git 只能联网使用，GitHub 只能离线使用'
+    ],
+    correctIndex: 0,
+    explanation: 'Git 可以在本地记录历史；GitHub 提供远端仓库、Pull Request、Issues 等协作能力。'
+  },
+  'git-core-flow': {
+    question: '在 Git 中，commit 更接近下面哪个比喻？',
+    options: ['删除项目', '保存当前项目状态的一个可追踪快照', '把网页发布到公网'],
+    correctIndex: 1,
+    explanation: '多个 commit 形成历史链路，每个 commit 都有唯一标识。'
+  },
+  'git-undo-sync': {
+    question: '多人协作分支已经推送到远端后，撤销错误提交通常优先选择什么？',
+    options: ['revert', '随便 reset 并强推', '删除 .git 文件夹'],
+    correctIndex: 0,
+    explanation: 'revert 会生成反向提交，不改写共享历史，通常比 reset 更适合多人协作。'
+  },
+  'github-pages': {
+    question: '手机打开 GitHub Pages 却只看到 README，最可能是什么原因？',
+    options: ['手机不支持网页', '发布源选错或没有发布构建后的静态文件', 'GitHub Pages 只能显示图片'],
+    correctIndex: 1,
+    explanation: '静态框架通常要发布构建后的 dist，并正确设置仓库子路径 base。'
+  },
+  'codex-agent': {
+    question: 'Codex 与普通聊天机器人的关键差别是什么？',
+    options: [
+      'Codex 只能回答百科问题',
+      'Codex 可以在授权范围内读写项目文件、运行命令并验证结果',
+      'Codex 不需要任何权限控制'
+    ],
+    correctIndex: 1,
+    explanation: 'Codex 偏执行型，但删除、覆盖、联网和敏感数据操作仍需要边界与确认。'
+  },
+  agent: {
+    question: 'Agent 智能体最关键的特征是什么？',
+    options: ['只生成一段文本', '根据目标规划并调用工具持续推进任务', '永远不需要人工确认'],
+    correctIndex: 1,
+    explanation: 'Agent 的核心是形成“判断—执行—观察—继续”的任务闭环。'
+  },
+  rag: {
+    question: 'RAG 的基本工作顺序是什么？',
+    options: ['先检索相关资料，再让模型基于资料回答', '先生成答案，再删除资料', '只把所有文件一次性塞给模型'],
+    correctIndex: 0,
+    explanation: 'RAG 的核心是先找资料再组织答案，检索质量会直接影响最终结果。'
+  },
+  dify: {
+    question: 'Dify 更适合下面哪种用途？',
+    options: ['组合模型、提示词、知识库和工作流搭建 AI 应用', '只做图片压缩', '替代 Git 记录代码历史'],
+    correctIndex: 0,
+    explanation: 'Dify 是 LLM 应用开发平台，可配置模型、知识库、Agent 和工作流。'
+  },
+  fastgpt: {
+    question: 'FastGPT 的常见重点方向是什么？',
+    options: ['视频剪辑', '知识库问答与 RAG 应用', '操作系统安装'],
+    correctIndex: 1,
+    explanation: 'FastGPT 常用于导入资料、检索内容并构建知识库问答应用。'
+  },
+  n8n: {
+    question: 'n8n 更像下面哪一种工具？',
+    options: ['把应用、API、数据库和 AI 节点串起来的自动化流水线', '纯文字编辑器', '只用于生成图片的模型'],
+    correctIndex: 0,
+    explanation: 'n8n 用节点和工作流连接不同系统，执行真实动作时必须管理凭证和权限。'
+  }
+}
+
+function buildFallbackQuiz(card: KnowledgeCard): KnowledgeQuiz {
+  const correctOption = card.summary
+  const distractors = [
+    `${card.title} 可以完全替代人工判断，不需要核对来源或结果。`,
+    `学习 ${card.title} 只需要记住名称，不需要理解用途和使用边界。`
+  ]
+  const correctIndex = [...card.id].reduce((sum, char) => sum + char.charCodeAt(0), 0) % 3
+  const options = [...distractors]
+  options.splice(correctIndex, 0, correctOption)
+
+  return {
+    question: `下面哪项对「${card.title}」的理解更准确？`,
+    options,
+    correctIndex,
+    explanation: `${card.beginnerTakeaway} ${card.caution}`
+  }
+}
+
+export function getQuiz(card: KnowledgeCard): KnowledgeQuiz {
+  return customQuizzes[card.id] ?? buildFallbackQuiz(card)
 }
 
 export const cards: KnowledgeCard[] = [

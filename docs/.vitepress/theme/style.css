@@ -653,15 +653,119 @@ body {
   margin: 16px 2px;
 }
 
+.kb-carousel {
+  background: rgba(255, 255, 255, 0.34);
+  border: 1px solid var(--kb-line);
+  border-radius: var(--kb-radius);
+  outline: none;
+  padding: 18px;
+  touch-action: pan-y;
+}
+
+.dark .kb-carousel {
+  background: rgba(11, 32, 40, 0.28);
+}
+
+.kb-carousel:focus-visible {
+  box-shadow: 0 0 0 3px rgba(81, 163, 188, 0.24);
+}
+
+.kb-carousel__hint {
+  align-items: center;
+  color: var(--kb-muted);
+  display: flex;
+  font-size: 13px;
+  font-weight: 800;
+  justify-content: space-between;
+  margin: 0 auto 14px;
+  max-width: 760px;
+}
+
+.kb-carousel__hint strong {
+  color: var(--kb-navy);
+}
+
 .kb-grid {
   display: grid;
   gap: 20px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 760px);
+  justify-content: center;
 }
 
 .knowledge-card {
   min-height: 730px;
   perspective: 1400px;
+}
+
+.kb-carousel .knowledge-card {
+  animation: kb-card-enter 220ms ease both;
+}
+
+@keyframes kb-card-enter {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.kb-carousel__controls {
+  align-items: center;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  margin: 18px auto 0;
+  max-width: 760px;
+}
+
+.kb-carousel__controls button {
+  background: var(--kb-surface);
+  border: 1px solid var(--kb-line);
+  border-radius: 999px;
+  color: var(--kb-navy);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+  min-height: 42px;
+  padding: 0 18px;
+}
+
+.kb-carousel__controls button:not(:disabled):hover {
+  background: rgba(142, 215, 198, 0.18);
+  border-color: var(--kb-mint-deep);
+}
+
+.kb-carousel__controls button:disabled {
+  cursor: default;
+  opacity: 0.38;
+}
+
+.kb-carousel__progress {
+  color: var(--kb-muted);
+  display: grid;
+  font-size: 12px;
+  font-weight: 800;
+  gap: 7px;
+  text-align: center;
+}
+
+.kb-carousel__track {
+  background: rgba(0, 78, 102, 0.1);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.kb-carousel__track i {
+  background: linear-gradient(90deg, var(--kb-mint-deep), var(--kb-yellow), var(--kb-orange));
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  transition: width 220ms ease;
 }
 
 .knowledge-card__inner {
@@ -1073,7 +1177,7 @@ body {
   }
 
   .kb-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 680px);
   }
 }
 
@@ -1117,6 +1221,37 @@ body {
 
   .kb-grid {
     grid-template-columns: 1fr;
+  }
+
+  .kb-carousel {
+    border-left: 0;
+    border-radius: 22px;
+    border-right: 0;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding: 14px 16px 18px;
+  }
+
+  .kb-carousel__hint {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .kb-carousel__hint span {
+    max-width: 230px;
+  }
+
+  .kb-carousel__controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .kb-carousel__progress {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .kb-carousel__controls button {
+    width: 100%;
   }
 
   .kb-level-tabs {

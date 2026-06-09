@@ -16,8 +16,12 @@ const quizOpenIds = ref(new Set<string>())
 const quizSelections = ref<Record<string, number>>({})
 const quizResults = ref<Record<string, 'correct' | 'incorrect'>>({})
 const reviewOnly = ref(false)
+const activeCardId = ref('')
+const touchStartX = ref<number | null>(null)
+const touchStartY = ref<number | null>(null)
 const storageKey = 'ai-card-knowledge-viewed-v1'
 const reviewStorageKey = 'ai-card-knowledge-review-v1'
+const interfaceStorageKey = 'ai-card-knowledge-interface-v1'
 
 const categoryDescriptions: Record<(typeof categories)[number], string> = {
   全部: '所有知识点',
@@ -99,6 +103,19 @@ const visibleCards = computed(() => {
   })
 })
 
+const currentCardIndex = computed(() => {
+  const index = visibleCards.value.findIndex((card) => card.id === activeCardId.value)
+  return index >= 0 ? index : 0
+})
+
+const currentCard = computed(() => visibleCards.value[currentCardIndex.value])
+const currentCards = computed(() => (currentCard.value ? [currentCard.value] : []))
+
+const carouselProgressPercent = computed(() => {
+  if (visibleCards.value.length === 0) return 0
+  return Math.round(((currentCardIndex.value + 1) / visibleCards.value.length) * 100)
+})
+
 function hashCard(id: string, seed: number) {
   let hash = seed * 97
   for (const char of id) hash = (hash * 31 + char.charCodeAt(0)) % 100000
@@ -109,6 +126,7 @@ function shuffleCards() {
   randomMode.value = true
   randomSeed.value += 1
   flippedCards.value = new Set()
+  activeCardId.value = ''
 }
 
 function resetFilters() {
@@ -119,6 +137,44 @@ function resetFilters() {
   randomMode.value = false
   reviewOnly.value = false
   flippedCards.value = new Set()
+  activeCardId.value = ''
+}
+
+function goToCard(index: number) {
+  if (visibleCards.value.length === 0) return
+  const nextIndex = Math.min(Math.max(index, 0), visibleCards.value.length - 1)
+  activeCardId.value = visibleCards.value[nextIndex].id
+}
+
+function showPreviousCard() {
+  goToCard(currentCardIndex.value - 1)
+}
+
+function showNextCard() {
+  goToCard(currentCardIndex.value + 1)
+}
+
+function handleTouchStart(event: TouchEvent) {
+  const touch = event.changedTouches[0]
+  touchStartX.value = touch.clientX
+  touchStartY.value = touch.clientY
+}
+
+function handleTouchEnd(event: TouchEvent) {
+  if (touchStartX.value === null || touchStartY.value === null) return
+
+  const touch = event.changedTouches[0]
+  const deltaX = touch.clientX - touchStartX.value
+  const deltaY = touch.clientY - touchStartY.value
+  touchStartX.value = null
+  touchStartY.value = null
+
+  if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return
+  if (deltaX > 0) {
+    showPreviousCard()
+  } else {
+    showNextCard()
+  }
 }
 
 function toggleFlip(id: string) {
@@ -228,6 +284,23 @@ onMounted(() => {
   } catch {
     reviewCardIds.value = new Set()
   }
+
+  try {
+    const storedInterface = window.localStorage.getItem(interfaceStorageKey)
+    if (storedInterface) {
+      const state = JSON.parse(storedInterface)
+      query.value = typeof state.query === 'string' ? state.query : ''
+      activeLearningLevel.value = learningLevels.includes(state.activeLearningLevel) ? state.activeLearningLevel : '初学必看'
+      activeCategory.value = categories.includes(state.activeCategory) ? state.activeCategory : '全部'
+      activeQuality.value = sourceLevels.includes(state.activeQuality) ? state.activeQuality : '全部'
+      reviewOnly.value = Boolean(state.reviewOnly)
+      randomMode.value = Boolean(state.randomMode)
+      randomSeed.value = Number.isFinite(state.randomSeed) ? state.randomSeed : 1
+      activeCardId.value = typeof state.activeCardId === 'string' ? state.activeCardId : ''
+    }
+  } catch {
+    activeCardId.value = ''
+  }
 })
 
 watch(viewedCardIds, (next) => {
@@ -243,6 +316,43 @@ watch(reviewCardIds, (next) => {
   } catch {
   }
 })
+
+watch(
+  visibleCards,
+  (nextCards) => {
+    if (nextCards.length === 0) {
+      activeCardId.value = ''
+      return
+    }
+
+    if (!nextCards.some((card) => card.id === activeCardId.value)) {
+      activeCardId.value = nextCards[0].id
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  [query, activeLearningLevel, activeCategory, activeQuality, reviewOnly, randomMode, randomSeed, activeCardId],
+  () => {
+    try {
+      window.localStorage.setItem(
+        interfaceStorageKey,
+        JSON.stringify({
+          query: query.value,
+          activeLearningLevel: activeLearningLevel.value,
+          activeCategory: activeCategory.value,
+          activeQuality: activeQuality.value,
+          reviewOnly: reviewOnly.value,
+          randomMode: randomMode.value,
+          randomSeed: randomSeed.value,
+          activeCardId: activeCardId.value
+        })
+      )
+    } catch {
+    }
+  }
+)
 
 watch(advancedUnlocked, (unlocked) => {
   if (!unlocked && activeLearningLevel.value === '进阶必看') {
@@ -387,9 +497,22 @@ watch(advancedUnlocked, (unlocked) => {
       <span v-if="randomMode">随机模式已开启</span>
     </section>
 
-    <section class="kb-grid" aria-label="知识卡片列表">
+    <section
+      class="kb-carousel"
+      aria-label="知识卡片滑动阅读"
+      tabindex="0"
+      @keydown.left.prevent="showPreviousCard"
+      @keydown.right.prevent="showNextCard"
+      @touchstart.passive="handleTouchStart"
+      @touchend.passive="handleTouchEnd"
+    >
+      <div class="kb-carousel__hint">
+        <span>手机左右滑动，电脑使用按钮或方向键</span>
+        <strong v-if="visibleCards.length">{{ currentCardIndex + 1 }} / {{ visibleCards.length }}</strong>
+      </div>
+      <div class="kb-grid">
       <article
-        v-for="card in visibleCards"
+        v-for="card in currentCards"
         :key="card.id"
         class="knowledge-card"
         :class="{ 'is-flipped': isFlipped(card.id) }"
@@ -498,6 +621,22 @@ watch(advancedUnlocked, (unlocked) => {
       <div v-if="visibleCards.length === 0" class="kb-empty">
         <img :src="withBase('/images/elephant/empty-peek.webp')" alt="" loading="lazy" />
         <p>没有匹配卡片，换个关键词试试。</p>
+      </div>
+      </div>
+
+      <div v-if="visibleCards.length" class="kb-carousel__controls" aria-label="卡片翻页">
+        <button type="button" :disabled="currentCardIndex === 0" @click="showPreviousCard">
+          ← 上一张
+        </button>
+        <div class="kb-carousel__progress">
+          <div class="kb-carousel__track" aria-hidden="true">
+            <i :style="{ width: `${carouselProgressPercent}%` }"></i>
+          </div>
+          <span>已浏览到第 {{ currentCardIndex + 1 }} 张，共 {{ visibleCards.length }} 张</span>
+        </div>
+        <button type="button" :disabled="currentCardIndex === visibleCards.length - 1" @click="showNextCard">
+          下一张 →
+        </button>
       </div>
     </section>
   </main>

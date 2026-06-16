@@ -212,6 +212,55 @@ export const learningMeta: Record<string, LearningMeta> = {
     prerequisites: ['API', '函数调用', 'Agent 智能体'],
     related: ['Dify', 'Coze / 扣子', 'Hook'],
     next: ['自动化权限与审计']
+  },
+  'ai-tool-selection-map': {
+    level: '初学必看',
+    learningGoal: '按任务类型选择 AI 工具，而不是只追一个最火产品。',
+    prerequisites: ['生成式 AI / AIGC', 'ChatGPT'],
+    related: ['聊天写作类 AI 工具', '图片生成类 AI 工具', 'AI 搜索工具'],
+    next: ['Agent 智能体', 'Dify', 'n8n']
+  },
+  'ai-chat-writing-tools': {
+    level: '初学必看',
+    learningGoal: '区分聊天写作工具适合中文日常写作、英文材料、代码辅助和长文档处理。',
+    prerequisites: ['ChatGPT', '提示词'],
+    related: ['Claude Opus 4.6', '结构化输出', '上下文窗口'],
+    next: ['AI 工具选择总览', 'AI 搜索工具']
+  },
+  'ai-image-tool-selection': {
+    level: '初学必看',
+    learningGoal: '理解文生图工具的选择要看画质、中文提示、风格一致性和版权复核。',
+    prerequisites: ['AI 图像生成', '提示词'],
+    related: ['Image2 / 新一代图像模型', '提示词', '评估指标'],
+    next: ['AI 视频生成工具', 'AI 工具选择总览']
+  },
+  'ai-video-tool-selection': {
+    level: '进阶必看',
+    learningGoal: '知道视频生成工具要重点评估运动稳定性、镜头连续性、成本和生成速度。',
+    prerequisites: ['Sora / 视频生成', 'AI 图像生成'],
+    related: ['AI 图像生成', '评估指标', '视频生成'],
+    next: ['AI 工具选择总览']
+  },
+  'ai-coding-tool-selection': {
+    level: '进阶必看',
+    learningGoal: '区分代码补全、对话改代码、项目级 Agent 和中文 IDE 插件的适用场景。',
+    prerequisites: ['Git', 'Codex'],
+    related: ['Codex', 'Claude Code', 'GitHub 协作流程'],
+    next: ['AI 工具选择总览', 'Agent 智能体']
+  },
+  'ai-office-tool-selection': {
+    level: '初学必看',
+    learningGoal: '知道办公 AI 的关键不是模型最强，而是能否接入自己正在使用的文档、表格和会议工具。',
+    prerequisites: ['生成式 AI / AIGC'],
+    related: ['结构化输出', '提示词', 'AI 搜索工具'],
+    next: ['AI 工具选择总览']
+  },
+  'ai-search-tool-selection': {
+    level: '初学必看',
+    learningGoal: '理解 AI 搜索工具要优先看来源引用、中文/英文覆盖和是否适合查实时信息。',
+    prerequisites: ['生成式 AI / AIGC', 'AI 幻觉'],
+    related: ['RAG 检索增强生成', '来源校验', '上下文窗口'],
+    next: ['RAG 检索增强生成', 'AI 工具选择总览']
   }
 }
 
@@ -333,6 +382,48 @@ const customQuizzes: Record<string, KnowledgeQuiz> = {
     options: ['把应用、API、数据库和 AI 节点串起来的自动化流水线', '纯文字编辑器', '只用于生成图片的模型'],
     correctIndex: 0,
     explanation: 'n8n 用节点和工作流连接不同系统，执行真实动作时必须管理凭证和权限。'
+  },
+  'ai-tool-selection-map': {
+    question: '普通人选 AI 工具时，最稳妥的第一步是什么？',
+    options: ['先按任务类型选工具，再看价格和访问条件', '只选网上最火的工具', '只看模型参数大小'],
+    correctIndex: 0,
+    explanation: '聊天写作、图片、视频、代码、办公和搜索的评估标准不同，不能用一个榜单解决所有场景。'
+  },
+  'ai-chat-writing-tools': {
+    question: '聊天写作类工具最应该按什么来选？',
+    options: ['自己的语言、文档长度、推理和代码需求', '图标是否好看', '是否一定国外工具才可用'],
+    correctIndex: 0,
+    explanation: '中文日常写作、英文材料、代码和长文档处理对工具能力要求不同。'
+  },
+  'ai-image-tool-selection': {
+    question: '选择文生图工具时，下面哪项更关键？',
+    options: ['只看是否免费', '看画质、提示词理解、风格一致性和版权复核', '完全不需要人工检查'],
+    correctIndex: 1,
+    explanation: '图片生成适合做草图和配图，但文字、结构、版权和事实细节都要复核。'
+  },
+  'ai-video-tool-selection': {
+    question: '视频生成工具最容易需要重点检查什么？',
+    options: ['运动连续性、人物/物体一致性和复杂动作变形', '文件名是否够短', '是否能替代所有后期剪辑'],
+    correctIndex: 0,
+    explanation: '视频比图片多了时间维度，运动稳定性和镜头连续性是核心检查点。'
+  },
+  'ai-coding-tool-selection': {
+    question: '代码类 AI 工具不应该被当成什么？',
+    options: ['写代码和解释代码的助手', '可以辅助测试和改 bug 的工具', '不需要审查就能直接上线的自动程序员'],
+    correctIndex: 2,
+    explanation: '代码工具能提效，但仍要看 diff、跑测试、保护密钥和确认改动范围。'
+  },
+  'ai-office-tool-selection': {
+    question: '办公 AI 选型最实际的判断标准是什么？',
+    options: ['是否接入你正在用的文档、表格、会议和协作软件', '名字是否带 Copilot', '是否能完全替代人工审核'],
+    correctIndex: 0,
+    explanation: '办公效率工具的价值常来自和现有工作流的集成，而不是单次对话能力。'
+  },
+  'ai-search-tool-selection': {
+    question: 'AI 搜索工具回答重要问题时，必须重点看什么？',
+    options: ['是否给出可核对来源和日期', '回答是否足够自信', '页面颜色是否舒服'],
+    correctIndex: 0,
+    explanation: '搜索类工具的核心价值是带来源的检索总结，重要结论要能回到原文核对。'
   }
 }
 
@@ -1456,5 +1547,131 @@ export const cards: KnowledgeCard[] = [
     sourceName: 'n8n Docs',
     sourceUrl: 'https://docs.n8n.io/',
     image: '/images/cards/api-plugin-function-command.webp'
+  },
+  {
+    id: 'ai-tool-selection-map',
+    title: 'AI 工具选择总览',
+    category: 'AI 行业 & 场景应用',
+    summary: '普通人选 AI 工具时，先按任务分成聊天写作、图片、视频、代码、办公和搜索六类。',
+    plain: '不要问“哪个 AI 最强”，先问“我要做什么”。写文章、画图、做视频、写代码、查资料、办公自动化，对工具的要求完全不同。',
+    officialPoint: '各类 AI 产品的功能、地区可用性、套餐和限制会持续变化，最终以对应产品官网和帮助中心为准。',
+    beginnerTakeaway: '选工具先看任务类型，再看语言、访问条件、价格、质量和是否能接入自己的工作流。',
+    caution: '不要把临时榜单当长期答案；价格、免费额度、模型版本和功能入口都会变。',
+    useCases: ['个人工具组合', '学习路线规划', '项目选型', '面试解释'],
+    tags: ['工具选型', '国内外对比', 'AI 应用'],
+    version: '工具选型框架',
+    updated: '2026-06',
+    sourceLevel: '待人工复核',
+    sourceName: 'OpenAI ChatGPT product page',
+    sourceUrl: 'https://openai.com/chatgpt/',
+    image: '/images/cards/knowledge-framework.webp'
+  },
+  {
+    id: 'ai-chat-writing-tools',
+    title: '聊天写作类 AI 工具',
+    category: 'AI 行业 & 场景应用',
+    summary: '聊天写作类工具适合写文章、翻译、总结、分析、写代码和多轮问答。',
+    plain: '国外代表有 ChatGPT、Claude；国内代表有通义千问、文心一言、Kimi、豆包。中文日常写作用国内工具更顺手，英文材料、复杂推理或代码任务可对比国外工具。',
+    officialPoint: '对话类产品通常在官网说明模型、文件理解、多模态、联网搜索、隐私和套餐限制等能力。',
+    beginnerTakeaway: '中文写作优先看中文表达和长文档能力；英文、代码和复杂规划优先看推理、上下文和稳定性。',
+    caution: '任何聊天工具都可能产生幻觉；重要事实、法律、财务、技术结论必须回到来源核对。',
+    useCases: ['中文写作', '英文润色', '长文总结', '代码解释'],
+    tags: ['ChatGPT', 'Claude', 'Kimi', '豆包'],
+    version: '工具选型框架',
+    updated: '2026-06',
+    sourceLevel: '待人工复核',
+    sourceName: 'OpenAI ChatGPT product page',
+    sourceUrl: 'https://openai.com/chatgpt/',
+    image: '/images/cards/responses-api.webp'
+  },
+  {
+    id: 'ai-image-tool-selection',
+    title: '图片生成类 AI 工具',
+    category: 'AIGC 应用细分',
+    summary: '图片生成工具把文字、参考图或草图变成视觉素材，适合配图、海报、概念图和设计草稿。',
+    plain: '国外常见 Midjourney、DALL·E、Stable Diffusion；国内常见通义万相、即梦、LiblibAI 等。国内工具中文提示更方便，追求极致风格和画质时可横向比较国外工具。',
+    officialPoint: '图像工具通常在官网说明文本生图、图生图、图片编辑、版权/使用条款和付费额度等规则。',
+    beginnerTakeaway: '做 CAD 示意图、工程效果图或知识库配图时，先用中文工具快速出草图，再按质量需求升级工具。',
+    caution: '图片中的文字、结构、比例、事实细节和版权授权都要人工复核，不适合直接当正式工程图。',
+    useCases: ['知识卡片配图', '海报草图', '工程示意图', '产品渲染草案'],
+    tags: ['文生图', 'Midjourney', '即梦', 'Stable Diffusion'],
+    version: '工具选型框架',
+    updated: '2026-06',
+    sourceLevel: '待人工复核',
+    sourceName: 'OpenAI Image generation guide',
+    sourceUrl: 'https://developers.openai.com/api/docs/guides/images',
+    image: '/images/cards/image-generation.webp'
+  },
+  {
+    id: 'ai-video-tool-selection',
+    title: '视频生成类 AI 工具',
+    category: 'AIGC 应用细分',
+    summary: '视频生成工具根据文字或图片生成短视频，重点考验运动稳定性、镜头连续性和生成成本。',
+    plain: '国外常见 Sora、Runway、Pika；国内常见可灵、即梦、Vidu。视频生成已经是国内 AI 工具很强的方向之一，但长视频和复杂动作仍需要检查。',
+    officialPoint: '视频工具的开放范围、时长限制、分辨率、生成速度、商用规则和价格都以官方页面为准。',
+    beginnerTakeaway: '短视频草稿、产品演示和分镜验证可以先试国内工具；复杂镜头要多次测试并保留人工剪辑。',
+    caution: '人物一致性、物理动作、复杂运动和长视频稳定性仍是常见风险，不要直接用于严肃交付。',
+    useCases: ['短视频分镜', '产品演示草稿', '教学动画', '营销素材'],
+    tags: ['Sora', 'Runway', '可灵', 'Vidu'],
+    version: '工具选型框架',
+    updated: '2026-06',
+    sourceLevel: '待人工复核',
+    sourceName: 'OpenAI Sora',
+    sourceUrl: 'https://openai.com/sora/',
+    image: '/images/cards/sora-video.webp'
+  },
+  {
+    id: 'ai-coding-tool-selection',
+    title: '代码编程类 AI 工具',
+    category: 'AI 配套技术',
+    summary: '代码类 AI 工具可用于补全代码、解释代码、找 bug、写测试和辅助修改项目。',
+    plain: '国外常见 GitHub Copilot、Cursor、ChatGPT/Codex；国内常见通义灵码、CodeGeeX、Fitten Code。小脚本和中文注释场景可先用国内免费工具，复杂项目可比较 Cursor、Codex 等项目级工具。',
+    officialPoint: '代码工具通常在官方文档说明 IDE 插件、上下文读取、代码补全、代理执行、隐私和计费方式。',
+    beginnerTakeaway: '补全工具适合写局部代码；项目级 Agent 适合读文件、改代码、跑命令和验证结果。',
+    caution: '代码类 AI 不能代替审查。提交前必须看 diff、跑测试，并避免上传密钥、账号和隐私数据。',
+    useCases: ['Python 脚本', '前端项目', 'Bug 修复', '测试用例'],
+    tags: ['Cursor', 'Copilot', 'Codex', '通义灵码'],
+    version: '工具选型框架',
+    updated: '2026-06',
+    sourceLevel: '待人工复核',
+    sourceName: 'GitHub Copilot docs',
+    sourceUrl: 'https://docs.github.com/en/copilot',
+    image: '/images/cards/codex-agent.webp'
+  },
+  {
+    id: 'ai-office-tool-selection',
+    title: '办公效率类 AI 工具',
+    category: 'AI 行业 & 场景应用',
+    summary: '办公 AI 主要用于文档摘要、PPT 草稿、Excel 公式、会议纪要和协作软件内的内容处理。',
+    plain: '国外常见 Microsoft Copilot、Google Gemini、Notion AI；国内常见 WPS AI、钉钉 AI、飞书 AI、腾讯文档 AI。选办公 AI 时，集成在哪个办公软件里通常比单次聊天能力更重要。',
+    officialPoint: '办公 AI 的可用功能、数据权限、企业管理和收费方式通常由对应办公软件官方说明。',
+    beginnerTakeaway: '已经用 WPS、钉钉、飞书或腾讯文档，就优先试它们内置的 AI，迁移成本更低。',
+    caution: '涉及公司资料、客户信息和合同内容时，要先确认企业权限、隐私政策和是否允许上传。',
+    useCases: ['会议纪要', 'PPT 初稿', '表格公式', '文档摘要'],
+    tags: ['WPS AI', '飞书 AI', 'Copilot', '办公自动化'],
+    version: '工具选型框架',
+    updated: '2026-06',
+    sourceLevel: '待人工复核',
+    sourceName: 'Microsoft 365 Copilot',
+    sourceUrl: 'https://www.microsoft.com/en-us/microsoft-365/copilot',
+    image: '/images/cards/structured-outputs.webp'
+  },
+  {
+    id: 'ai-search-tool-selection',
+    title: '搜索知识类 AI 工具',
+    category: 'AI 行业 & 场景应用',
+    summary: 'AI 搜索工具把联网检索和总结结合起来，适合查资料、看来源、做初步调研。',
+    plain: '国外常见 Perplexity、ChatGPT Search、You.com；国内常见 Kimi、秘塔 AI 搜索、天工 AI。查英文前沿资料更适合国外搜索，查中文互联网和国内资料更适合国内工具。',
+    officialPoint: '搜索类工具应重点查看是否提供来源链接、引用方式、搜索范围、隐私说明和付费限制。',
+    beginnerTakeaway: '搜资料不要只看总结，要点开来源确认日期、原文语境和是否可靠。',
+    caution: 'AI 搜索可能引用不完整、误读网页或混合旧信息；用于决策前必须二次核对。',
+    useCases: ['资料调研', '竞品搜索', '论文/文章摘要', '来源核验'],
+    tags: ['Perplexity', '秘塔 AI 搜索', 'Kimi', '联网搜索'],
+    version: '工具选型框架',
+    updated: '2026-06',
+    sourceLevel: '待人工复核',
+    sourceName: 'Perplexity',
+    sourceUrl: 'https://www.perplexity.ai/',
+    image: '/images/cards/rag.webp'
   }
 ]
